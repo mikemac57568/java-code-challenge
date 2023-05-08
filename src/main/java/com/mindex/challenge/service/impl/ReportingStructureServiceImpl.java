@@ -22,10 +22,12 @@ public class ReportingStructureServiceImpl implements ReportingStructureService 
     @Override
     public ReportingStructure generateReportingStructure(String id) {
         Employee rootEmployee = employeeRepository.findByEmployeeId(id);
-        return new ReportingStructure(rootEmployee, countNumberOfReports(rootEmployee));
+        return new ReportingStructure(rootEmployee, countNumberOfReportsDFS(rootEmployee));
     }
 
     /**
+     * BFS - left this method and comments here but I replaced it with a DFS below
+     *
      * I don't think memory usage is a big concern here - I think the largest the queue will
      * grow to is the number of reports to a single parent + siblings of that parent.
      * I chose to not use recursion because I think it's hard
@@ -51,6 +53,25 @@ public class ReportingStructureServiceImpl implements ReportingStructureService 
             } else {
                 //add all the direct reports to the queue so we can explore their reports
                 employeeQueue.addAll(directReports);
+            }
+        }
+        return numberOfReports;
+    }
+
+    /**
+     * DFS - I was outside working in the garden and my above BFS solution was bothering me, so I implemented below.
+     * This should use less memory and be faster than my initial BFS algorithm
+     **/
+    private int countNumberOfReportsDFS(Employee employee) {
+        int numberOfReports = 0;
+        Stack<Employee> stack = new Stack<>();
+        Employee current = employee;
+        stack.push(current);
+        while (!stack.isEmpty()) {
+            current = stack.pop();
+            for (Employee directReport : retrieveDirectReports(current)) {
+                numberOfReports++;
+                stack.push(directReport);
             }
         }
         return numberOfReports;
