@@ -1,8 +1,12 @@
 package com.mindex.challenge.data;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.List;
 
 public class Employee {
+    //Without this annotation, PUT requests were creating new (duplicate) entries
+    @Id
     private String employeeId;
     private String firstName;
     private String lastName;
